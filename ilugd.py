@@ -6,19 +6,18 @@ from telegram.ext.dispatcher import run_async
 from random import choice
 import os
 
-BOTNAME = 'ILUGDbot'
-
+BOTNAME = 'YOURBOTNAMEGOESHERE'
+toggle_state_welcome = 0
 @run_async
 def send_async(bot, *args, **kwargs):
     bot.sendMessage(*args, **kwargs)
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.DEBUG)
 
 config = configparser.ConfigParser()
 config.read('bot.ini')
 
 
-updater = Updater(os.environ['token']) # we should use env variable !!
+updater = Updater(token = '630074149:AAE5G411hgWo33tejBsHP6qxFc6eSO7S-m0') # we should use env variable !! <- I don't (^^)
 dispatcher = updater.dispatcher
 
 
@@ -74,21 +73,35 @@ def help(bot, update):
 /twitter - twitter link for ILUGD
 /meetuplink - to get meetup link for ILUGD
 /github - link to ilugd github repos
+/toggle_welcome_usage - makes the bot sound more friendly to new users
 ''')
 
 
 # Welcome a user to the chat
 def welcome(bot, update):
+    global toggle_state_welcome
     message = update.message
     chat_id = message.chat.id
-    phrases = ['Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
-               'Hi {}! Welcome to {} .let\'s start with introduction.'.format(message.new_chat_member.first_name,message.chat.title)
+    if message.new_chat_member.username!="" and toggle_state_welcome==1:
+        name_to_call = message.new_chat_member.username
+    else:
+        name_to_call = message.new_chat_member.first_name
+    phrases = ['Hello {}! Welcome to {} .Please introduce yourself.'.format(name_to_call,message.chat.title),
+               'Hi {}! Welcome to {} .let\'s start with introduction.'.format(name_to_call,message.chat.title)
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title)
                 ]
     text = choice(phrases)
     send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)
+
+def toggle_welcome_usage(bot, update):
+    global toggle_state_welcome
+    toggle_state_welcome = 1 - toggle_state_welcome
+    states_welcome=['first_name','username']
+    state_welcome=states_welcome[toggle_state_welcome]
+    bot.sendMessage(chat_id=update.message.chat_id, text='toggles the welcome usage from username to first name')
+    bot.sendMessage(chat_id=update.message.chat_id, text='currently toggled to "{}"'.format(state_welcome))
 
 
 def goodbye(bot, update):
@@ -119,6 +132,25 @@ def empty_message(bot, update):
         if update.message.left_chat_member.username != BOTNAME:
             return goodbye(bot, update)
 
+"""def welcome_test(bot, update): #was a very ugly way to test the command directly in telegram
+    global toggle_state_welcome
+    message = update.message
+    chat_id = message.chat.id
+    if message.from_user.username!="" and toggle_state_welcome==1:
+        name_to_call = message.from_user.username
+    else:
+        name_to_call = message.from_user.first_name
+    phrases = ['Hello {}! Welcome to {} .Please introduce yourself.'.format(name_to_call,message.chat.title),
+               'Hi {}! Welcome to {} .let\'s start with introduction.'.format(name_to_call,message.chat.title)
+               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
+               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
+               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title)
+                ]
+    text = choice(phrases)
+    send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)"""
+#dispatcher.add_handler(CommandHandler('wesite', welcome_test))
+
+
 
 dispatcher.add_handler(CommandHandler('website', website))
 dispatcher.add_handler(CommandHandler('facebook', facebok))
@@ -130,6 +162,7 @@ dispatcher.add_handler(CommandHandler('twitter',twitter))
 dispatcher.add_handler(CommandHandler('meetuplink',meetuplink))
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('github',github))
+dispatcher.add_handler(CommandHandler('toggle_welcome_usage',toggle_welcome_usage))
 
 updater.start_polling()
 updater.idle()
