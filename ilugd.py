@@ -63,6 +63,12 @@ def github(bot,update):
     bot.sendChatAction(chat_id=update.message.chat_id,
                        action=ChatAction.TYPING)
     bot.sendMessage(chat_id=update.message.chat_id, text=config['BOT']['github'])
+	
+def coc(bot,update):
+    bot.sendChatAction(chat_id=update.message.chat_id,
+                       action=ChatAction.TYPING)
+    bot.sendMessage(chat_id=update.message.chat_id, text=config['BOT']['coc'])
+	
 
 def help(bot, update):
      bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
