@@ -81,8 +81,8 @@ def help(bot, update):
 def welcome(bot, update):
     message = update.message
     chat_id = message.chat.id
-    phrases = ['Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
-               'Hi {}! Welcome to {} .let\'s start with introduction.'.format(message.new_chat_member.first_name,message.chat.title)
+    phrases = ['Hello {}! Welcome to {} .Please introduce yourself. Dont forget to read the chat rules using !rules command'.format(message.new_chat_member.first_name,message.chat.title),
+               'Hi {}! Welcome to {} .let\'s start with introduction. Dont forget to read the chat rules using !rules command'.format(message.new_chat_member.first_name,message.chat.title)
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
                #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title)
