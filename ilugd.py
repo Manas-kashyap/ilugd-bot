@@ -34,7 +34,7 @@ def website(bot, update):
                        action=ChatAction.TYPING)
     bot.sendMessage(chat_id=update.message.chat_id, text=config['BOT']['website'])
 
-def facebok(bot, update):
+def facebook(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id,
                        action=ChatAction.TYPING)
     bot.sendMessage(chat_id=update.message.chat_id, text=config['BOT']['facebook'])
@@ -82,17 +82,25 @@ def help(bot, update):
 /github - link to ilugd github repos
 ''')
 
+def unknown(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id,
+                       action=ChatAction.TYPING)
+    bot.sendMessage(chat_id=update.message.chat_id, text="Unknown command. Use /help")
 
 # Welcome a user to the chat
 def welcome(bot, update):
     message = update.message
     chat_id = message.chat.id
-    phrases = ['Hello {}! Welcome to {} .Please introduce yourself. Dont forget to read the chat rules using !rules command'.format(message.new_chat_member.first_name,message.chat.title),
-               'Hi {}! Welcome to {} .let\'s start with introduction. Dont forget to read the chat rules using !rules command'.format(message.new_chat_member.first_name,message.chat.title)
-               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
-               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title),
-               #'Hello {}! Welcome to {} .Please introduce yourself.'.format(message.new_chat_member.first_name,message.chat.title)
-                ]
+
+    try:
+        # new_chat_members return a list of dicts from which member's username has to be searched
+        member_first_name = [member['first_name'] for member in message.new_chat_members if 'first_name' in member]
+    except KeyError:
+        member_first_name = message.new_chat_members[0]['first_name']
+		
+    phrases = ['Hello {}! Welcome to {} .Please introduce yourself. Dont forget to read the chat rules using !rules command'.format(member_first_name,message.chat.title)]
+
+    bot.send_sticker(chat_id=chat_id, sticker="CAADAgADAQEAAladvQoivp8OuMLmNBYE")
     text = choice(phrases)
     send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)
 
@@ -101,20 +109,26 @@ def goodbye(bot, update):
     message = update.message
     chat_id = message.chat.id
     text = 'Goodbye, $username!'
-    text = text.replace('$username',message.left_chat_member.first_name).replace('$title', message.chat.title)
+    text = text.replace('$username', message.left_chat_member.first_name)
     send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)
 	
 def intro(bot, update):
     message = update.message
     chat_id = message.chat.id
-    text = 'Hi everyone,I am a python bot working to serve Ilug-D.'
+    text = 'Hi everyone. I am a python bot working to serve Ilug-D.'
     send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)	
 
 def empty_message(bot, update):
+	
+    try:
+	# new_chat_members return a list of dicts from which bot's username has to be searched
+        member_username = [member['username'] for member in update.message.new_chat_members if 'username' in member]
+    except KeyError:
+        member_username = update.message.new_chat_members[0]['username']
 
-    if update.message.new_chat_member is not None:
+    if update.message.new_chat_members is not None:
         # Bot was added to a group chat
-        if update.message.new_chat_member.username == BOTNAME:
+        if member_username == BOTNAME:
             return intro(bot, update)
         # Another user joined the chat
         else:
@@ -127,15 +141,16 @@ def empty_message(bot, update):
 
 
 dispatcher.add_handler(CommandHandler('website', website))
-dispatcher.add_handler(CommandHandler('facebook', facebok))
+dispatcher.add_handler(CommandHandler('facebook', facebook))
 dispatcher.add_handler(CommandHandler('help', help))
-dispatcher.add_handler(MessageHandler([Filters.status_update], empty_message))
+dispatcher.add_handler(MessageHandler(Filters.status_update, empty_message))
 dispatcher.add_handler(CommandHandler('invitelink',invitelink))
 dispatcher.add_handler(CommandHandler('mailinglist',mailinglist))
 dispatcher.add_handler(CommandHandler('twitter',twitter))
 dispatcher.add_handler(CommandHandler('meetuplink',meetuplink))
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('github',github))
+dispatcher.add_handler(MessageHandler(Filters.command, unknown)
 
 updater.start_polling()
 updater.idle()
