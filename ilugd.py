@@ -6,7 +6,7 @@ from telegram.ext.dispatcher import run_async
 from random import choice
 import os
 
-BOTNAME = 'ILUGDbot'
+BOTNAME = 'Chutia_bot'
 
 @run_async
 def send_async(bot, *args, **kwargs):
@@ -17,8 +17,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 config = configparser.ConfigParser()
 config.read('bot.ini')
 
-
-updater = Updater(os.environ['token']) # we should use env variable !!
+# Use `use_context=True` for version 12  
+updater = Updater(os.environ['token'], use_context=True) # we should use env variable !!
 dispatcher = updater.dispatcher
 
 
