@@ -6,7 +6,7 @@ from telegram.ext.dispatcher import run_async
 from random import choice
 import os
 
-BOTNAME = 'ILUGDbot'
+BOTNAME = 'Chutia_bot'
 
 @run_async
 def send_async(bot, *args, **kwargs):
@@ -17,7 +17,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 config = configparser.ConfigParser()
 config.read('bot.ini')
 
-updater = Updater(os.environ['token']) # we should use env variable !!
+# Use `use_context=True` for version 12  
+updater = Updater(os.environ['token'], use_context=True) # we should use env variable !!
 dispatcher = updater.dispatcher
 
 
@@ -81,7 +82,6 @@ def help(bot, update):
 /github - link to ilugd github repos
 ''')
 
-# When an unknown command is used.
 def unknown(bot, update):
     bot.sendChatAction(chat_id=update.message.chat_id,
                        action=ChatAction.TYPING)
@@ -98,16 +98,9 @@ def welcome(bot, update):
     except KeyError:
         member_first_name = message.new_chat_members[0]['first_name']
 		
-    # Add new phrases to welcome different users with different messages.
-    phrases = ['Hello {}! Welcome to {}. Please introduce yourself. Dont forget to read the chat rules using !rules command'.format(member_first_name,message.chat.title),\
-		'Welcome to the team, {}. Please introduce yourself to the rest of the team. Use !rules command to know the rules'.format(member_first_name,message.chat.title),\
-		'Welcome aboard, {}. Please introduce yourself to us all. Use !rules command to know the rules'.format(member_first_name,message.chat.title)]
-    
-    # Add new stickers(or gifs) to be sent along with the welcome messages.
-    sticks_or_gifs = ["CAADAgADAQEAAladvQoivp8OuMLmNBYE", "CgADBAADKQIAAvbZrVBfq1geymDcBhYE", "CgADBAADEAIAAlUprVClEezz_y6athYE", "CgADBAAD5AEAApkAAaxQ9W8thGWyngoWBA"]
-    
-    sticker = choice(sticks_or_gifs)
-    bot.send_sticker(chat_id=chat_id, sticker=sticker)
+    phrases = ['Hello {}! Welcome to {} .Please introduce yourself. Dont forget to read the chat rules using !rules command'.format(member_first_name,message.chat.title)]
+
+    bot.send_sticker(chat_id=chat_id, sticker="CAADAgADAQEAAladvQoivp8OuMLmNBYE")
     text = choice(phrases)
     send_async(bot, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)
 
@@ -142,7 +135,7 @@ def empty_message(bot, update):
             return welcome(bot, update)
 
     # Someone left the chat
-    if update.message.left_chat_member is not None:
+    elif update.message.left_chat_member is not None:
         if update.message.left_chat_member.username != BOTNAME:
             return goodbye(bot, update)
 
@@ -157,7 +150,7 @@ dispatcher.add_handler(CommandHandler('twitter',twitter))
 dispatcher.add_handler(CommandHandler('meetuplink',meetuplink))
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('github',github))
-dispatcher.add_handler(MessageHandler(Filters.command, unknown))
+dispatcher.add_handler(MessageHandler(Filters.command, unknown)
 
 updater.start_polling()
 updater.idle()
