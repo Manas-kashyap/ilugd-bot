@@ -152,5 +152,5 @@ dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('github',github))
 dispatcher.add_handler(MessageHandler(Filters.command, unknown)
 
-updater.start_polling()
+#updater.start_polling()
 updater.idle()
