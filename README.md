@@ -1,8 +1,17 @@
 # ilugd-bot
+
 Bot for India Linux User Group Delhi
 
-## Author
-* Manas Kashyap (about.me/manaskashyap)
+example used from https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/chatmemberbot.py
 
-## Contributor
-* xeon-zolt
+## Previous Author
+
+- Manas Kashyap
+
+## Current Author
+
+- JustTulpa
+
+## OG Contributor
+
+- xeon-zolt
